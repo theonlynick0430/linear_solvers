@@ -4,14 +4,16 @@ import torch
 def qr(A):
     """
     QR decomposition of a matrix A.
+    
     Runtime: O(mn^2)
 
     Args:
-        A (torch.Tensor): The input matrix of shape (m, n) with full rank.
+        A (torch.Tensor): The input matrix of shape (m, n) where m >= n.
 
     Returns:
         Q (torch.Tensor): The orthogonal matrix of shape (m, n).
         R (torch.Tensor): The upper triangular matrix of shape (n, n).
+        invertible (bool): Whether the matrix A is invertible.
     """
     m, n = A.shape
     Q = torch.zeros((m, n), device=A.device, dtype=A.dtype)
@@ -24,14 +26,18 @@ def qr(A):
             R[j, i] = torch.dot(ui, vj)
             vi -= R[j, i] * vj
         R[i, i] = torch.norm(vi)
+        if R[i, i] == 0:
+            return Q, R, False
         vi /= R[i, i]
         Q[:, i] = vi
-    return Q, R
+    return Q, R, True
 
 
 def solve(A, b):
     """
     Solve the linear system Ax = b using QR decomposition.
+    If m > n, the least squares solution is implicitly returned.
+
     Runtime: O(mn^2)
 
     Args:
@@ -42,7 +48,9 @@ def solve(A, b):
         x (torch.Tensor): The solution vector of shape (n,).
     """
     _, n = A.shape
-    Q, R = qr(A)
+    Q, R, invertible = qr(A)
+    if not invertible:
+        raise ValueError("The matrix A is singular.")
     y = torch.matmul(Q.T, b)
     x = torch.zeros(n, device=A.device, dtype=A.dtype)
     # backward substitution (O(n^2))
