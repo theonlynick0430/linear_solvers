@@ -24,12 +24,24 @@ This document outlines the key advantages of different matrix decomposition algo
 - **Numerical Stability**: Very stable for PSD matrices
 - **Memory Usage**: Requires the least memory of all three methods
 
+## Singular Value Decomposition (SVD)
+
+- **Numerical Stability**: Most stable of all decomposition methods, especially for ill-conditioned and rank-deficient matrices
+- **Computational Cost**: Slowest of all methods, typically O(mn²) operations for an m×n matrix where m ≥ n
+- **Versatility**: Can be applied to any matrix (rectangular or square, full rank or rank-deficient)
+- **Pseudoinverse**: Provides a direct way to compute the Moore-Penrose pseudoinverse
+- **Applications**: Excellent for dimensionality reduction (PCA), data compression, noise reduction, and solving least squares problems
+- **Rank Determination**: Reveals the effective rank of a matrix through its singular values
+
 ## When to Use Each Algorithm
 
 | Scenario | Recommended Algorithm |
 |----------|----------------------|
 | Square, well-conditioned matrices | LU (faster) |
-| Ill-conditioned matrices | QR (more stable) |
-| Overdetermined systems (least squares) | QR |
+| Ill-conditioned matrices | QR (more stable) or SVD (most stable) |
+| Overdetermined systems (least squares) | QR or SVD |
 | Symmetric positive (semi-)definite matrices | Cholesky (fastest) |
+| Rank-deficient matrices | SVD |
+| Computing pseudoinverse | SVD |
+| Dimensionality reduction (PCA) | SVD |
 | Multiple right-hand sides | Any (all are efficient) |
